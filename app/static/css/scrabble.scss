@@ -1,0 +1,38 @@
+$primary-bg: rgba(122, 149, 209, 0);
+$square-bg: beige;
+$square-hover-bg: rgb(72, 100, 44);
+
+
+.board{
+    margin-left: 1vmin;
+    // margin-top: 5vmin;
+    min-width: 50vmin;
+    min-height: 50vmin;
+    width: 50vmin;
+    height: 50vmin;
+    background-color: black;
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    border: bisque solid 2vmin;
+    .square{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        white-space: nowrap;
+        text-align: center;
+        background-color: $square-bg;
+        border: black solid 1px;
+        font-size: 1.5vmin;
+        color: $square-bg;
+        &:hover{
+            background-color: $square-hover-bg;
+            color: $square-hover-bg;
+            cursor: pointer;
+        }
+    }
+    .selectedSquare{
+        background-color: yellow;
+    }
+}
+
+

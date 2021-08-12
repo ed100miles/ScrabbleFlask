@@ -1,0 +1,42 @@
+.board {
+  margin-left: 1vmin;
+  min-width: 50vmin;
+  min-height: 50vmin;
+  width: 50vmin;
+  height: 50vmin;
+  background-color: black;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (1fr)[15];
+      grid-template-columns: repeat(15, 1fr);
+  border: bisque solid 2vmin;
+}
+
+.board .square {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  white-space: nowrap;
+  text-align: center;
+  background-color: beige;
+  border: black solid 1px;
+  font-size: 1.5vmin;
+  color: beige;
+}
+
+.board .square:hover {
+  background-color: #48642c;
+  color: #48642c;
+  cursor: pointer;
+}
+
+.board .selectedSquare {
+  background-color: yellow;
+}
+/*# sourceMappingURL=scrabble.css.map */

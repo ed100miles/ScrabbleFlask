@@ -1,9 +1,9 @@
 from scrabbleWords import scrabble_words
-from datetime import date, datetime
+from datetime import datetime
 import pickle
 
 class Trie:
-    """Tree where each node represents a letter...TODO: write propper docstring..."""
+    """Create and populate Trie data structure and find words that can be made with given letters."""
 
     class _Node:
         """Non-public Node subclass for Trie class"""
@@ -18,7 +18,7 @@ class Trie:
         """Initialise instance of Trie class and set root"""
         self.root = self._Node()
 
-    def add_word(self, word):
+    def add_word(self, word:str):
         """Adds word string to the Trie tree"""
         index_node = self.root
         is_word = False
@@ -33,8 +33,8 @@ class Trie:
             # move index node to new child
             index_node = index_node.children[letter]
 
-    def find_words(self, user_letters):
-        """Returns set of words in Trie with matching user letters"""
+    def find_words(self, user_letters:str):
+        """Returns set of words in Trie with matching letters in user_letters string"""
         self.found_words = []   # create or clear list for matching words
         user_letters_dict = {}  # create dict of user letters e.g 'a':3
         for letter in user_letters:
@@ -43,7 +43,7 @@ class Trie:
             else:
                 user_letters_dict[letter] += 1
         self._find_words(user_letters_dict)
-        return self.found_words
+        return set(self.found_words)    # convert to set to remove any possible duplicates
 
     # --- Private methods:
 
@@ -63,25 +63,37 @@ class Trie:
                 user_letters_less_child[child] -= 1
                 self._find_words(user_letters_less_child, node.children[child])
 
-trie = Trie()
 
+
+
+# def populate_scrabble_trie(scrabble_words_file_path):
+
+# trie = Trie()
 trie = pickle.load(open('trie.pickle', 'rb'))
 
+print(trie.find_words('cat'))
 
-board_letters = 'ealrivslrinssrknv'
-user_letters = 'sinervlsenrlviser'
-out = set()
+# board_letters = 'vvfht'
+# user_letters = 'sinervlsenrlviser'
+# out = []
+# start = datetime.now()
 
-start = datetime.now()
+# for board_letter in board_letters:
+#     test_letters = user_letters + board_letter
+#     out.add(tuple(trie.find_words(test_letters)))
 
-for letter in board_letters:
-    user_letters.append(board_letters)
-end = datetime.now()
+# print(len(out))
+# print(out)
+
+
+# for letter in board_letters:
+#     user_letters.append(board_letters)
+# end = datetime.now()
 
 
 # for word in words:
 #     word_up = word.upper()
 #     print(f'{word.capitalize()}: {scrabble_words[word_up]}')
 
-print(f'Duration: {end - start}')
+# print(f'Duration: {end - start}')
 

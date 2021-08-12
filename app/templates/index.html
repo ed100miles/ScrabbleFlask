@@ -1,13 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}Index{% endblock %}
+{% block title %}Scrabble{% endblock %}
 
 {% block main %}
 
 <div>
-    <h1>Index page</h1>
-    <p>This is the index page.</p>
+    <h1>Scrabble</h1>
     <div class="board"></div>
+    <div>
+        <form class='user_letters' onsubmit="return false"> 
+            <label for='letters'>Your letters: </label>
+            <input type="text" id='letters' />
+        </form>
+    </div>
 </div>
 
 {% endblock %}
