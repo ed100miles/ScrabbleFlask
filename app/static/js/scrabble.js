@@ -2,6 +2,7 @@ console.log('scrabble.js imported successfully.')
 
 const BOARD = document.querySelector('.board');
 const USER_LETTERS = document.querySelector('#letters')
+const FOUND_WORDS_LIST = document.querySelector('.found_words')
 
 // Generate 15*15 sqaures in board and assign unique id
 for (let x = 0; x < 15; x++) {
@@ -40,11 +41,18 @@ function lettersChange(e) {
     })
     .then(function(response){
         response.json().then(function(data){
-            console.log(data)
+            // console.log( new Date())
+            FOUND_WORDS_LIST.textContent = ''
+            for (const [key, value] of Object.entries(data)) {
+                let word = document.createElement('div')
+                // word.classList.add('found_word')
+                word.textContent = `${key}` 
+                FOUND_WORDS_LIST.appendChild(word)
+                // console.log(key, value);
+              }
         })
     })
 }
 
 USER_LETTERS.addEventListener('keyup', lettersChange)
-
 

@@ -10,5 +10,4 @@ def index():
         print(possible_words)
         json_response = make_response(jsonify(possible_words), 200)
         return json_response
-
     return render_template('index.html')

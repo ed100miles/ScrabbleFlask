@@ -39,4 +39,9 @@
 .board .selectedSquare {
   background-color: yellow;
 }
+
+.found_words {
+  background-color: green;
+  color: wheat;
+}
 /*# sourceMappingURL=scrabble.css.map */
