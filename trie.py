@@ -1,6 +1,6 @@
 from scrabbleWords import scrabble_words
-from datetime import datetime
-import pickle
+# from datetime import datetime
+
 
 class Trie:
     """Create and populate Trie data structure and find words that can be made with given letters."""
@@ -63,15 +63,17 @@ class Trie:
                 user_letters_less_child[child] -= 1
                 self._find_words(user_letters_less_child, node.children[child])
 
-
-
+trie = Trie()
+for word in scrabble_words:
+    trie.add_word(word.lower())
+    
 
 # def populate_scrabble_trie(scrabble_words_file_path):
 
 # trie = Trie()
-trie = pickle.load(open('trie.pickle', 'rb'))
+# trie = pickle.load(open('trie.pickle', 'rb'))
 
-print(trie.find_words('cat'))
+# print(trie.find_words('cat'))
 
 # board_letters = 'vvfht'
 # user_letters = 'sinervlsenrlviser'
