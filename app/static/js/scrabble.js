@@ -6,9 +6,6 @@ const FOUND_WORDS_LIST = document.querySelector('.found_words')
 const ACROSS_BTN = document.querySelector('#across_btn')
 const DOWN_BTN = document.querySelector('#down_btn')
 
-
-
-
 // Generate 15*15 sqaures in board and assign unique id
 for (let x = 0; x < 15; x++) {
     for (let y = 0; y < 15; y++) {
@@ -67,15 +64,20 @@ function lettersChange(e) {
 USER_LETTERS.addEventListener('keyup', lettersChange)
 
 // Down & Across buttons
-let play_down = true
-let play_across = false
+let play_down = false
+let play_across = true
+ACROSS_BTN.classList.add('clicked')
 DOWN_BTN.addEventListener('click', (e) => {
     play_down = true;
     play_across = false;
+    ACROSS_BTN.classList.remove('clicked')
+    DOWN_BTN.classList.add('clicked')
 })
 ACROSS_BTN.addEventListener('click', (e) => {
     play_down = false;
     play_across = true;
+    ACROSS_BTN.classList.add('clicked')
+    DOWN_BTN.classList.remove('clicked')
 })
 
 // Board typing:

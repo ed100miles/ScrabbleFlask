@@ -2,6 +2,10 @@ $primary-bg: rgb(122, 149, 209);
 $square-bg: beige;
 $square-hover-bg: rgb(72, 100, 44);
 
+h1{
+    text-align: center;
+}
+
 .board_and_words{
     display: flex;
     justify-content: space-around;
@@ -42,6 +46,7 @@ $square-hover-bg: rgb(72, 100, 44);
     .found_words{
         background-color: $primary-bg;
         color: wheat;
+        text-align: center;
         margin-left: 1vmin;
         min-width: 40vmin;
         min-height: 50vmin;
@@ -54,7 +59,21 @@ $square-hover-bg: rgb(72, 100, 44);
     }
 }
 .form_container{
-    padding-top: 1vh;
+    padding-top: 10vh;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    .button{
+        border-radius: 1vmin;
+        background-color: $primary-bg;
+        font-size: 2vmin;
+        height: 5vmin;
+        width: 20vmin;
+    }
+    .clicked{
+        background-color: yellow;
+    }
+    .user_letters{
+        font-size: 2vmin;
+    }
 }
+
