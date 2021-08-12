@@ -35,6 +35,9 @@ $square-hover-bg: rgb(72, 100, 44);
         .selectedSquare{
             background-color: yellow;
         }
+        .typed_square{
+            color: black;
+        }
     }
     .found_words{
         background-color: $primary-bg;

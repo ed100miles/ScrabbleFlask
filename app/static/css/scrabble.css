@@ -48,6 +48,10 @@
   background-color: yellow;
 }
 
+.board_and_words .board .typed_square {
+  color: black;
+}
+
 .board_and_words .found_words {
   background-color: #7a95d1;
   color: wheat;

@@ -1,6 +1,7 @@
 from scrabbleWords import scrabble_words
 from datetime import datetime
 
+
 class Trie:
     """Create and populate Trie data structure and find words that can be made with given letters."""
 
@@ -17,7 +18,7 @@ class Trie:
         """Initialise instance of Trie class and set root"""
         self.root = self._Node()
 
-    def add_word(self, word:str):
+    def add_word(self, word: str):
         """Adds word string to the Trie tree"""
         index_node = self.root
         is_word = False
@@ -32,7 +33,7 @@ class Trie:
             # move index node to new child
             index_node = index_node.children[letter]
 
-    def find_words(self, user_letters:str):
+    def find_words(self, user_letters: str):
         """Returns dict of words in Trie with matching letters in user_letters string.
             Dict comprised of matching words as keys and definitions as values."""
         self.found_words = []   # create or clear list for matching words
@@ -47,7 +48,7 @@ class Trie:
         for word in self.found_words:
             word_up = word.upper()
             found_words_and_defs[word] = scrabble_words[word_up]
-        return found_words_and_defs  
+        return found_words_and_defs
 
     # --- Private methods:
 
@@ -68,11 +69,7 @@ class Trie:
                 self._find_words(user_letters_less_child, node.children[child])
 
 
-
-
 trie = Trie()
 
 for word in scrabble_words:
     trie.add_word(word.lower())
-
-
