@@ -3,9 +3,11 @@ console.log('scrabble.js imported successfully.')
 const BOARD = document.querySelector('.board');
 const USER_LETTERS = document.querySelector('#letters')
 const FOUND_WORDS_LIST = document.querySelector('.found_words')
+const ACROSS_BTN = document.querySelector('#across_btn')
+const DOWN_BTN = document.querySelector('#down_btn')
 
-let play_down = true
-let play_accross = false
+
+
 
 // Generate 15*15 sqaures in board and assign unique id
 for (let x = 0; x < 15; x++) {
@@ -64,6 +66,18 @@ function lettersChange(e) {
 
 USER_LETTERS.addEventListener('keyup', lettersChange)
 
+// Down & Across buttons
+let play_down = true
+let play_across = false
+DOWN_BTN.addEventListener('click', (e) => {
+    play_down = true;
+    play_across = false;
+})
+ACROSS_BTN.addEventListener('click', (e) => {
+    play_down = false;
+    play_across = true;
+})
+
 // Board typing:
 // TODO: DRY this out!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -76,7 +90,7 @@ function boardType(e) {
             targetTile.classList.add('typed_square')
             targetTile.classList.remove('selectedSquare')
             // assign new target tile
-            if (play_accross && id[1] < 15) {
+            if (play_across && id[1] < 15) {
                 let new_coord = `#coord-${id[0]}-${parseInt(id[1]) + 1}`
                 targetTile = document.querySelector(new_coord)
                 targetTile.classList.add('selectedSquare')
@@ -88,14 +102,14 @@ function boardType(e) {
             }
         }
         else if (e.which == 8) { // if backspace pressed
-            if (play_accross && id[1] > 1) {
+            if (play_across && id[1] > 1) {
                 let new_coord = `#coord-${id[0]}-${parseInt(id[1]) - 1}`
                 targetTile.classList.remove('selectedSquare')
                 targetTile.classList.remove('typed_square')
                 targetTile.textContent = '.'
                 targetTile = document.querySelector(new_coord)
                 targetTile.classList.add('selectedSquare')
-            } if (play_accross && id[1] == 1) { // if leftmost square
+            } if (play_across && id[1] == 1) { // if leftmost square
                 targetTile.textContent = '.'
                 targetTile.classList.remove('selectedSquare')
                 targetTile.classList.remove('typed_square')
