@@ -1,3 +1,7 @@
+from scrabbleWords import scrabble_words
+from datetime import date, datetime
+import pickle
+
 class Trie:
     """Tree where each node represents a letter...TODO: write propper docstring..."""
 
@@ -59,15 +63,25 @@ class Trie:
                 user_letters_less_child[child] -= 1
                 self._find_words(user_letters_less_child, node.children[child])
 
-
-word_list = ['cat', 'cold', 'cot', 'colt', 'car', 'card', 'coat',
-             'coddle', 'cod', 'cool', 'old', 'odd', 'bold', 'cheese', 'do']
-
 trie = Trie()
 
-for word in word_list:
-    trie.add_word(word)
+trie = pickle.load(open('trie.pickle', 'rb'))
 
-user_letters = 'dogcat'
 
-print(trie.find_words(user_letters))
+board_letters = 'ealrivslrinssrknv'
+user_letters = 'sinervlsenrlviser'
+out = set()
+
+start = datetime.now()
+
+for letter in board_letters:
+    user_letters.append(board_letters)
+end = datetime.now()
+
+
+# for word in words:
+#     word_up = word.upper()
+#     print(f'{word.capitalize()}: {scrabble_words[word_up]}')
+
+print(f'Duration: {end - start}')
+
