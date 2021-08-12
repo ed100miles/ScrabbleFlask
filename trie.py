@@ -1,6 +1,5 @@
 from scrabbleWords import scrabble_words
-# from datetime import datetime
-
+from datetime import datetime
 
 class Trie:
     """Create and populate Trie data structure and find words that can be made with given letters."""
@@ -34,7 +33,8 @@ class Trie:
             index_node = index_node.children[letter]
 
     def find_words(self, user_letters:str):
-        """Returns set of words in Trie with matching letters in user_letters string"""
+        """Returns dict of words in Trie with matching letters in user_letters string.
+            Dict comprised of matching words as keys and definitions as values."""
         self.found_words = []   # create or clear list for matching words
         user_letters_dict = {}  # create dict of user letters e.g 'a':3
         for letter in user_letters:
@@ -43,7 +43,11 @@ class Trie:
             else:
                 user_letters_dict[letter] += 1
         self._find_words(user_letters_dict)
-        return set(self.found_words)    # convert to set to remove any possible duplicates
+        found_words_and_defs = {}   # convert to dict
+        for word in self.found_words:
+            word_up = word.upper()
+            found_words_and_defs[word] = scrabble_words[word_up]
+        return found_words_and_defs  
 
     # --- Private methods:
 
@@ -63,39 +67,12 @@ class Trie:
                 user_letters_less_child[child] -= 1
                 self._find_words(user_letters_less_child, node.children[child])
 
+
+
+
 trie = Trie()
+
 for word in scrabble_words:
     trie.add_word(word.lower())
-    
 
-# def populate_scrabble_trie(scrabble_words_file_path):
-
-# trie = Trie()
-# trie = pickle.load(open('trie.pickle', 'rb'))
-
-# print(trie.find_words('cat'))
-
-# board_letters = 'vvfht'
-# user_letters = 'sinervlsenrlviser'
-# out = []
-# start = datetime.now()
-
-# for board_letter in board_letters:
-#     test_letters = user_letters + board_letter
-#     out.add(tuple(trie.find_words(test_letters)))
-
-# print(len(out))
-# print(out)
-
-
-# for letter in board_letters:
-#     user_letters.append(board_letters)
-# end = datetime.now()
-
-
-# for word in words:
-#     word_up = word.upper()
-#     print(f'{word.capitalize()}: {scrabble_words[word_up]}')
-
-# print(f'Duration: {end - start}')
 

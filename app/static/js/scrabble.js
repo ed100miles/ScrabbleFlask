@@ -1,9 +1,9 @@
-console.log('App.js imported successfully.')
+console.log('scrabble.js imported successfully.')
 
 const BOARD = document.querySelector('.board');
 const USER_LETTERS = document.querySelector('#letters')
 
-// Generate 15*15 sqaures in board
+// Generate 15*15 sqaures in board and assign unique id
 for (let x = 0; x < 15; x++) {
     for (let y = 0; y < 15; y++) {
         let square = document.createElement('span');
@@ -27,23 +27,23 @@ function boardClick(e) {
 BOARD.addEventListener('click', boardClick)
 
 // USER LETTERS
-function lettersChange(e){
-
+function lettersChange(e) {
     let userLetters = USER_LETTERS.value
-
-    fetch(`${window.origin}/`,{
+    fetch(`${window.origin}/`, {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify(userLetters),
-        cache:'no-cache',
+        cache: 'no-cache',
         headers: new Headers({
             'content-type': 'application/json'
-            })
         })
-    // .then(function(response){
-    //     response.json()
-    // })
-    }
+    })
+    .then(function(response){
+        response.json().then(function(data){
+            console.log(data)
+        })
+    })
+}
 
 USER_LETTERS.addEventListener('keyup', lettersChange)
 
