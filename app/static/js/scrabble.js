@@ -28,6 +28,7 @@ function boardClick(e) {
 BOARD.addEventListener('click', boardClick)
 
 // USER LETTERS
+FOUND_WORDS_LIST.textContent = 'Enter your letters below to see what words you can make.'
 function lettersChange(e) {
     let userLetters = USER_LETTERS.value
     fetch(`${window.origin}/`, {
@@ -42,14 +43,16 @@ function lettersChange(e) {
     .then(function(response){
         response.json().then(function(data){
             // console.log( new Date())
-            FOUND_WORDS_LIST.textContent = ''
+            FOUND_WORDS_LIST.textContent = `${Object.keys(data).length} possible words:`
             for (const [key, value] of Object.entries(data)) {
                 let word = document.createElement('div')
                 // word.classList.add('found_word')
                 word.textContent = `${key}` 
                 FOUND_WORDS_LIST.appendChild(word)
-                // console.log(key, value);
               }
+            if (Object.keys(data).length == 0){
+                FOUND_WORDS_LIST.textContent = 'Enter your letters below to see what words you can make.'
+            }
         })
     })
 }

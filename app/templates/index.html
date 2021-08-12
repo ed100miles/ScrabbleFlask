@@ -6,14 +6,15 @@
 
 <div>
     <h1>Scrabble</h1>
-    <div class="board"></div>
-    <div>
+    <div class='board_and_words'>
+        <div class="board"></div>
+        <div class="found_words"></div>
+    </div>
+    <div class="form_container">
         <form class='user_letters' onsubmit="return false"> 
             <label for='letters'>Your letters: </label>
-            <input type="text" id='letters' />
+            <input type="text" id='letters' maxlength="15"/>
         </form>
-    </div>
-    <div class="found_words">
     </div>
 </div>
 

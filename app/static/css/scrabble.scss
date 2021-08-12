@@ -1,42 +1,57 @@
-$primary-bg: rgba(122, 149, 209, 0);
+$primary-bg: rgb(122, 149, 209);
 $square-bg: beige;
 $square-hover-bg: rgb(72, 100, 44);
 
-
-.board{
-    margin-left: 1vmin;
-    // margin-top: 5vmin;
-    min-width: 50vmin;
-    min-height: 50vmin;
-    width: 50vmin;
-    height: 50vmin;
-    background-color: black;
-    display: grid;
-    grid-template-columns: repeat(15, 1fr);
-    border: bisque solid 2vmin;
-    .square{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        white-space: nowrap;
-        text-align: center;
-        background-color: $square-bg;
-        border: black solid 1px;
-        font-size: 1.5vmin;
-        color: $square-bg;
-        &:hover{
-            background-color: $square-hover-bg;
-            color: $square-hover-bg;
-            cursor: pointer;
+.board_and_words{
+    display: flex;
+    justify-content: space-around;
+    .board{
+        margin-left: 1vmin;
+        // margin-top: 5vmin;
+        min-width: 50vmin;
+        min-height: 50vmin;
+        width: 50vmin;
+        height: 50vmin;
+        background-color: black;
+        display: grid;
+        grid-template-columns: repeat(15, 1fr);
+        border: bisque solid 2vmin;
+        .square{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            white-space: nowrap;
+            text-align: center;
+            background-color: $square-bg;
+            border: black solid 1px;
+            font-size: 1.5vmin;
+            color: $square-bg;
+            &:hover{
+                background-color: $square-hover-bg;
+                color: $square-hover-bg;
+                cursor: pointer;
+            }
+        }
+        .selectedSquare{
+            background-color: yellow;
         }
     }
-    .selectedSquare{
-        background-color: yellow;
+    .found_words{
+        background-color: $primary-bg;
+        color: wheat;
+        margin-left: 1vmin;
+        min-width: 40vmin;
+        min-height: 50vmin;
+        width: 40vmin;
+        height: 50vmin;
+        border-radius: 5px;
+        overflow: scroll;
+        padding-left: 2vmin;
+        font-size: 2.5vmin;
     }
 }
-
-
-.found_words{
-    background-color: green;
-    color: wheat;
+.form_container{
+    padding-top: 1vh;
+    display: flex;
+    justify-content: center;
 }

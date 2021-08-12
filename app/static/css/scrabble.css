@@ -1,4 +1,12 @@
-.board {
+.board_and_words {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+
+.board_and_words .board {
   margin-left: 1vmin;
   min-width: 50vmin;
   min-height: 50vmin;
@@ -12,7 +20,7 @@
   border: bisque solid 2vmin;
 }
 
-.board .square {
+.board_and_words .board .square {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -30,18 +38,37 @@
   color: beige;
 }
 
-.board .square:hover {
+.board_and_words .board .square:hover {
   background-color: #48642c;
   color: #48642c;
   cursor: pointer;
 }
 
-.board .selectedSquare {
+.board_and_words .board .selectedSquare {
   background-color: yellow;
 }
 
-.found_words {
-  background-color: green;
+.board_and_words .found_words {
+  background-color: #7a95d1;
   color: wheat;
+  margin-left: 1vmin;
+  min-width: 40vmin;
+  min-height: 50vmin;
+  width: 40vmin;
+  height: 50vmin;
+  border-radius: 5px;
+  overflow: scroll;
+  padding-left: 2vmin;
+  font-size: 2.5vmin;
+}
+
+.form_container {
+  padding-top: 1vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
 /*# sourceMappingURL=scrabble.css.map */
