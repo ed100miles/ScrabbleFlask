@@ -7,8 +7,9 @@ import json
 def index():
     if request.method == 'POST':
         json_body = json.loads(request.data.decode('utf-8'))
-        
         user_letters = json_body['userLetters']
+        board_dict = json_body['board_dict']
+        print(board_dict)
         possible_words = trie.find_words(user_letters)
         json_response = make_response(jsonify(possible_words), 200)
         return json_response
