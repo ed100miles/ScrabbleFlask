@@ -3,7 +3,8 @@ console.log('scrabble.js imported successfully.')
 // Named DOM elements
 const BOARD = document.querySelector('.board');
 const USER_LETTERS = document.querySelector('#letters')
-const FOUND_WORDS_LIST = document.querySelector('.found_words')
+const FOUND_WORDS_LIST = document.querySelector('.found_words_list')
+const FOUND_WORDS_HEADER = document.querySelector('.found_words_header')
 const ACROSS_BTN = document.querySelector('#across_btn')
 const DOWN_BTN = document.querySelector('#down_btn')
 
@@ -33,9 +34,9 @@ function boardClick(e) {
 }
 BOARD.addEventListener('click', boardClick)
 
-function getBoardDict(){
+function getBoardDict() {
     let board_dict = {}
-    for (let x = 0; x < 225; x++){
+    for (let x = 0; x < 225; x++) {
         // console.log(BOARD.childNodes[x].textContent)
         board_dict[x] = BOARD.childNodes[x].textContent
     }
@@ -44,11 +45,11 @@ function getBoardDict(){
 
 
 // USER LETTERS
-FOUND_WORDS_LIST.textContent = 'Enter your letters below to see what words you can make.'
+FOUND_WORDS_HEADER.textContent = 'Enter your letters below to see what words you can make.'
 function lettersChange(e) {
-    board_dict = getBoardDict()     
+    board_dict = getBoardDict()
     let userLetters = USER_LETTERS.value
-    let json_body = {'userLetters': userLetters, 'board_dict': board_dict}
+    let json_body = { 'userLetters': userLetters, 'board_dict': board_dict }
     // let allLetters = stringify(userLetters) + stringify(board_dict)
     // console.log(userLetters)
     fetch(`${window.origin}/`, {
@@ -62,16 +63,21 @@ function lettersChange(e) {
     })
         .then(function (response) {
             response.json().then(function (data) {
-                // console.log( new Date())
-                FOUND_WORDS_LIST.textContent = `${Object.keys(data).length} possible words:`
+                word_count = 0
+                FOUND_WORDS_LIST.textContent = ''
                 for (const [key, value] of Object.entries(data)) {
-                    let word = document.createElement('div')
-                    // word.classList.add('found_word')
-                    word.textContent = `${key}`
-                    FOUND_WORDS_LIST.appendChild(word)
+                    let score = key
+                    // value is a list of (word, definition) tuples so iterates through this list
+                    for (let item of value) {
+                        let word = document.createElement('div')
+                        word.textContent = `${item[0]}: ${score} points`
+                        FOUND_WORDS_LIST.prepend(word)
+                        word_count += 1
+                    }
                 }
+                FOUND_WORDS_HEADER.textContent = `${word_count} possible words:`
                 if (Object.keys(data).length == 0) {
-                    FOUND_WORDS_LIST.textContent = 'Enter your letters below to see what words you can make.'
+                    FOUND_WORDS_HEADER.textContent = 'Enter your letters below to see what words you can make.'
                 }
             })
         })

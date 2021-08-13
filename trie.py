@@ -88,10 +88,14 @@ class Scrabble():
         return _score
         
     def _score_word_dict(self, word_dict:dict):
-        """Returns dict with word as key and tuple (score, definition) as vaule. Takes dict of words:definitions as input."""
+        """Returns dict with score as key and list of tuples (word, definition) as vaule. Takes dict of words:definitions as input."""
         words_defs_scores_dict = {}
         for word in word_dict:
-            words_defs_scores_dict[word] = (self._score_word(word), word_dict[word])
+            score = self._score_word(word)
+            if score not in words_defs_scores_dict:
+                words_defs_scores_dict[score] = [(word, word_dict[word])]
+            else:
+                words_defs_scores_dict[score].append((word, word_dict[word]))
         return words_defs_scores_dict
 
     def find_words(self, board:dict, user_letters:str):
