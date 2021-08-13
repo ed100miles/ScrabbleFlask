@@ -1,10 +1,12 @@
 console.log('scrabble.js imported successfully.')
 
+// Named DOM elements
 const BOARD = document.querySelector('.board');
 const USER_LETTERS = document.querySelector('#letters')
 const FOUND_WORDS_LIST = document.querySelector('.found_words')
 const ACROSS_BTN = document.querySelector('#across_btn')
 const DOWN_BTN = document.querySelector('#down_btn')
+
 
 // Generate 15*15 sqaures in board and assign unique id
 for (let x = 0; x < 15; x++) {
@@ -12,7 +14,7 @@ for (let x = 0; x < 15; x++) {
         let square = document.createElement('span');
         square.classList.add('square');
         square.id = `coord-${x + 1}-${y + 1}`;
-        square.textContent = `.`; //${x+1}
+        square.textContent = `.`; // hack to get spacing right 
         BOARD.appendChild(square);
     }
 }
@@ -31,14 +33,28 @@ function boardClick(e) {
 }
 BOARD.addEventListener('click', boardClick)
 
+function getBoardDict(){
+    let board_dict = {}
+    for (let x = 0; x < 225; x++){
+        // console.log(BOARD.childNodes[x].textContent)
+        board_dict[x] = BOARD.childNodes[x].textContent
+    }
+    return board_dict
+}
+
+
 // USER LETTERS
 FOUND_WORDS_LIST.textContent = 'Enter your letters below to see what words you can make.'
 function lettersChange(e) {
+    board_dict = getBoardDict()     
     let userLetters = USER_LETTERS.value
+    let json_body = {'userLetters': userLetters, 'board_dict': board_dict}
+    // let allLetters = stringify(userLetters) + stringify(board_dict)
+    // console.log(userLetters)
     fetch(`${window.origin}/`, {
         method: 'POST',
         credentials: 'include',
-        body: JSON.stringify(userLetters),
+        body: JSON.stringify(json_body),
         cache: 'no-cache',
         headers: new Headers({
             'content-type': 'application/json'

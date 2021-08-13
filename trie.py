@@ -71,5 +71,7 @@ class Trie:
 
 trie = Trie()
 
+
+# populate with scrabble words
 for word in scrabble_words:
     trie.add_word(word.lower())
