@@ -8,45 +8,16 @@ const FOUND_WORDS_HEADER = document.querySelector('.found_words_header')
 const ACROSS_BTN = document.querySelector('#across_btn')
 const DOWN_BTN = document.querySelector('#down_btn')
 
-
-// Generate 15*15 sqaures in board and assign unique id
-for (let x = 0; x < 15; x++) {
-    for (let y = 0; y < 15; y++) {
-        let square = document.createElement('span');
-        square.classList.add('square');
-        square.id = `coord-${x + 1}-${y + 1}`;
-        square.textContent = `.`; // hack to get spacing right 
-        BOARD.appendChild(square);
-    }
-}
-
-// Initialize targetTile to centre of board
-let targetTile = document.querySelector('#coord-8-8')
-targetTile.classList.add('selectedSquare')
-
-// Function to add selectedSquare class to clicked tile and remove from old
-function boardClick(e) {
-    if (e.target.id != '') {
-        targetTile.classList.remove('selectedSquare') // remove styling from old target
-        targetTile = document.querySelector(`#${e.target.id}`)// update target
-        targetTile.classList.add('selectedSquare') // add the styling
-    }
-}
-BOARD.addEventListener('click', boardClick)
-
-function getBoardDict() {
-    let board_dict = {}
-    for (let x = 0; x < 225; x++) {
-        // console.log(BOARD.childNodes[x].textContent)
-        board_dict[x] = BOARD.childNodes[x].textContent
-    }
-    return board_dict
-}
-
-
-// USER LETTERS
-FOUND_WORDS_HEADER.textContent = 'Enter your letters below to see what words you can make.'
+// Get words fetch request:
 function lettersChange(e) {
+    function getBoardDict() {
+        let board_dict = {}
+        for (let x = 0; x < 225; x++) {
+            // console.log(BOARD.childNodes[x].textContent)
+            board_dict[x] = BOARD.childNodes[x].textContent
+        }
+        return board_dict
+    }
     board_dict = getBoardDict()
     let userLetters = USER_LETTERS.value
     let json_body = { 'userLetters': userLetters, 'board_dict': board_dict }
@@ -83,29 +54,22 @@ function lettersChange(e) {
         })
 }
 
-USER_LETTERS.addEventListener('keyup', lettersChange)
-
-// Down & Across buttons
-let play_down = false
-let play_across = true
-ACROSS_BTN.classList.add('clicked')
-DOWN_BTN.addEventListener('click', (e) => {
-    play_down = true;
-    play_across = false;
-    ACROSS_BTN.classList.remove('clicked')
-    DOWN_BTN.classList.add('clicked')
-})
-ACROSS_BTN.addEventListener('click', (e) => {
-    play_down = false;
-    play_across = true;
-    ACROSS_BTN.classList.add('clicked')
-    DOWN_BTN.classList.remove('clicked')
-})
-
 // Board typing:
-// TODO: DRY this out!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 function boardType(e) {
+    function board_type_update_end() {
+        targetTile.textContent = '.'
+        targetTile.classList.remove('selectedSquare')
+        targetTile.classList.remove('typed_square')
+        targetTile = document.querySelector('#coord-8-8')
+        targetTile.classList.add('selectedSquare')
+    }
+    function board_type_update_mid(new_coord) {
+        targetTile.textContent = '.'
+        targetTile.classList.remove('selectedSquare')
+        targetTile.classList.remove('typed_square')
+        targetTile = document.querySelector(new_coord)
+        targetTile.classList.add('selectedSquare')
+    }
     if (document.activeElement.id !== 'letters') {
         let id = targetTile.id.slice(6).split('-')
         let typed_letter = String.fromCharCode(e.which)
@@ -128,33 +92,65 @@ function boardType(e) {
         else if (e.which == 8) { // if backspace pressed
             if (play_across && id[1] > 1) {
                 let new_coord = `#coord-${id[0]}-${parseInt(id[1]) - 1}`
-                targetTile.classList.remove('selectedSquare')
-                targetTile.classList.remove('typed_square')
-                targetTile.textContent = '.'
-                targetTile = document.querySelector(new_coord)
-                targetTile.classList.add('selectedSquare')
+                board_type_update_mid(new_coord)
             } if (play_across && id[1] == 1) { // if leftmost square
-                targetTile.textContent = '.'
-                targetTile.classList.remove('selectedSquare')
-                targetTile.classList.remove('typed_square')
-                targetTile = document.querySelector('#coord-8-8')
-                targetTile.classList.add('selectedSquare')
+                board_type_update_end()
             } if (play_down && id[0] > 1) {
                 let new_coord = `#coord-${parseInt(id[0]) - 1}-${id[1]}`
-                targetTile.classList.remove('selectedSquare')
-                targetTile.classList.remove('typed_square')
-                targetTile.textContent = '.'
-                targetTile = document.querySelector(new_coord)
-                targetTile.classList.add('selectedSquare')
+                board_type_update_mid(new_coord)
             } if (play_down && id[0] == 1) { // if leftmost square
-                targetTile.textContent = '.'
-                targetTile.classList.remove('selectedSquare')
-                targetTile.classList.remove('typed_square')
-                targetTile = document.querySelector('#coord-8-8')
-                targetTile.classList.add('selectedSquare')
+                board_type_update_end()
             }
         }
     }
 }
+
+// Initializations:
+
+// Generate 15*15 sqaures in board and assign unique id
+for (let x = 0; x < 15; x++) {
+    for (let y = 0; y < 15; y++) {
+        let square = document.createElement('span');
+        square.classList.add('square');
+        square.id = `coord-${x + 1}-${y + 1}`;
+        square.textContent = `.`; // hack to get spacing right 
+        BOARD.appendChild(square);
+    }
+}
+
+let targetTile = document.querySelector('#coord-8-8') // Initialize targetTile to centre of board:
+targetTile.classList.add('selectedSquare') // and style
+let play_across = true
+let play_down = false
+FOUND_WORDS_HEADER.textContent = 'Enter your letters below to see what words you can make.'
+
+
+// Event listners:
+
 document.addEventListener('keyup', boardType)
 
+USER_LETTERS.addEventListener('keyup', lettersChange)
+
+BOARD.addEventListener('click', (e) => {
+    //  Add selectedSquare class to clicked tile and remove from old
+    if (e.target.id != '') {
+        targetTile.classList.remove('selectedSquare') // remove styling from old target
+        targetTile = document.querySelector(`#${e.target.id}`)// update target
+        targetTile.classList.add('selectedSquare') // add the styling
+    }
+})
+
+ACROSS_BTN.classList.add('clicked')
+DOWN_BTN.addEventListener('click', (e) => {
+    play_down = true;
+    play_across = false;
+    ACROSS_BTN.classList.remove('clicked')
+    DOWN_BTN.classList.add('clicked')
+})
+
+ACROSS_BTN.addEventListener('click', (e) => {
+    play_down = false;
+    play_across = true;
+    ACROSS_BTN.classList.add('clicked')
+    DOWN_BTN.classList.remove('clicked')
+})
