@@ -100,16 +100,18 @@ class Scrabble():
         """iterate through board letters and return list of possible words"""
         possible_words = {}
         unique_board_letters = set()
-        # user_letters_and_board_letter = user_letters
         for key in board:
             if board[key] != '.':  # if there's a letter at that position in the board
                 unique_board_letters.add(board[key].lower())
-        for letter in unique_board_letters:
-            user_letters_and_board_letter = user_letters + letter
-            found_words_dict = self.trie.find_words(user_letters_and_board_letter)
-            for word in found_words_dict:
-                if word not in possible_words:
-                    possible_words[word] = found_words_dict[word]
+        if len(unique_board_letters) > 0: #if there's any letters on the board:
+            for letter in unique_board_letters:
+                user_letters_and_board_letter = user_letters + letter
+                found_words_dict = self.trie.find_words(user_letters_and_board_letter)
+                for word in found_words_dict:
+                    if word not in possible_words:
+                        possible_words[word] = found_words_dict[word]
+        else: # if there's no letters on the board
+            possible_words = self.trie.find_words(user_letters) # just return words user can make
 
         return possible_words
 

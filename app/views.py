@@ -9,7 +9,6 @@ def index():
         json_body = json.loads(request.data.decode('utf-8'))
         user_letters = json_body['userLetters']
         board_dict = json_body['board_dict']
-        print(board_dict)
         possible_words = scrabble.find_words(board_dict, user_letters)
         json_response = make_response(jsonify(possible_words), 200)
         return json_response
