@@ -69,12 +69,12 @@ class Trie:
                 self._find_words(user_letters_less_child, node.children[child])
 
 
-trie = Trie()
+# trie = Trie()
 
 
-# populate with scrabble words
-for word in scrabble_words:
-    trie.add_word(word.lower())
+# # populate with scrabble words
+# for word in scrabble_words:
+#     trie.add_word(word.lower())
 
 
 user_letters = 'catukvbktioyfckytcvkytcc'
@@ -116,17 +116,17 @@ class Scrabble():
 
 scrabble = Scrabble()
 
-start = datetime.now()
-possible_words = scrabble.find_words(board, user_letters)
-end = datetime.now()
+# start = datetime.now()
+# possible_words = scrabble.find_words(board, user_letters)
+# end = datetime.now()
 
-print(f'Duration: {end - start}')
-print(f'Len possible words: {len(possible_words)}')
+# print(f'Duration: {end - start}')
+# print(f'Len possible words: {len(possible_words)}')
 
 
-start = datetime.now()
-possible_words = scrabble.find_words(board2, user_letters)
-end = datetime.now()
+# start = datetime.now()
+# possible_words = scrabble.find_words(board2, user_letters)
+# end = datetime.now()
 
-print(f'Duration: {end - start}')
-print(f'Len possible words: {len(possible_words)}')
+# print(f'Duration: {end - start}')
+# print(f'Len possible words: {len(possible_words)}')
