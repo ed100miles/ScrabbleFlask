@@ -1,5 +1,5 @@
 from scrabbleWords import scrabble_words
-from datetime import datetime, time
+from datetime import date, datetime, time
 
 
 class Trie:
@@ -37,7 +37,7 @@ class Trie:
         """Returns dict of words in Trie with matching letters in user_letters string.
             Dict comprised of matching words as keys and definitions as values."""
         self.found_words = []   # create or clear list for matching words
-        user_letters_dict = {}  # create dict of user letters e.g 'a':3
+        user_letters_dict = {}  # create dict of user letters e.g {'a':3}
         for letter in user_letters:
             if letter not in user_letters_dict:
                 user_letters_dict[letter] = 1
@@ -69,7 +69,6 @@ class Trie:
                 self._find_words(user_letters_less_child, node.children[child])
 
 
-
 class Scrabble():
     """Group of methods for scrabble game"""
 
@@ -78,16 +77,17 @@ class Scrabble():
         for word in scrabble_words:
             self.trie.add_word(word.lower())
 
-    def _score_word(self, word:str):
+    def _score_word(self, word: str):
         """Returns scrabble score of word string"""
         _score = 0
-        _letter_scores = {'a':1 , 'b':3, 'c':3, 'd':2, 'e':1, 'f':4, 'g':2, 'h':4, 'i':1, 'j':8, 'k':5, 'l':1, 'm':3, 'n':1, 'o':1, 'p':3, 'q':10, 'r':1, 's':1, 't':1, 'u':1, 'v':8, 'w':4, 'x':8, 'y':4, 'z':10}
-        _score_word = word.lower() # just incase casing is wrong
+        _letter_scores = {'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4, 'i': 1, 'j': 8, 'k': 5, 'l': 1,
+                          'm': 3, 'n': 1, 'o': 1, 'p': 3, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 1, 'v': 8, 'w': 4, 'x': 8, 'y': 4, 'z': 10}
+        _score_word = word.lower()  # just incase casing is wrong
         for letter in _score_word:
             _score += _letter_scores[letter]
         return _score
-        
-    def _score_word_dict(self, word_dict:dict):
+
+    def _score_word_dict(self, word_dict: dict):
         """Returns dict with score as key and list of tuples (word, definition) as vaule. Takes dict of words:definitions as input."""
         words_defs_scores_dict = {}
         for word in word_dict:
@@ -98,40 +98,106 @@ class Scrabble():
                 words_defs_scores_dict[score].append((word, word_dict[word]))
         return words_defs_scores_dict
 
-    def find_words(self, board:dict, user_letters:str):
+    def find_words(self, board: dict, user_letters: str):
         """Takes dict of letters on board and string of users letters and return dict of possible words + definitions"""
         possible_words = {}
         unique_board_letters = set()
         for key in board:
-            if board[key] != '.':  # if there's a letter at that position in the board
+            if board[key] != '.':               # if there's a letter at that position in the board
                 unique_board_letters.add(board[key].lower())
-        if len(unique_board_letters) > 0: #if there's any letters on the board:
+        # if there's any letters on the board:
+        if len(unique_board_letters) > 0:
             for letter in unique_board_letters:
                 user_letters_and_board_letter = user_letters + letter
-                found_words_dict = self.trie.find_words(user_letters_and_board_letter)
+                found_words_dict = self.trie.find_words(
+                    user_letters_and_board_letter)
                 for word in found_words_dict:
                     if word not in possible_words:
                         possible_words[word] = found_words_dict[word]
-        else: # if there's no letters on the board
-            possible_words = self.trie.find_words(user_letters) # just return words user can make
-        possible_words_with_scores_and_defs = self._score_word_dict(possible_words)
+        else:                                                   # if there's no letters on the board
+            possible_words = self.trie.find_words(
+                user_letters)                                   # just return words user can make
+
+        #  Here we want to take possible words and see if they fit the board?
+
+        possible_words_with_scores_and_defs = self._score_word_dict(
+            possible_words)
         return possible_words_with_scores_and_defs
+
+    def _fits_board(self, board, word):
+        """Returns True if word fits on board and doesn't clash with other letters, else return False. """
+        out_board = [
+            [None] * 15 for i in range(15)]  # create 2d array board representation
+        for x in board.items():  # edit board to input
+            key, value = x
+            y = int(key) // 15
+            z = int(key) % 15
+            out_board[y][z] = value
+
+        print(start)
+        for letter_num, letter in enumerate(word):
+            for row_num, row in enumerate(out_board):
+                for square_num, square in enumerate(row):
+                    if letter == square.lower():
+                        enough_space_right = False
+                        enough_space_left = False
+                        enough_space_up = False
+                        enough_space_down = False
+                        # calculate space required before and after letter for word to fit
+                        #  +1 to ensure space before any letters
+                        before_space_needed = word.index(
+                            letter, letter_num) + 1
+                        after_space_needed = len(
+                            word) - word.index(letter, letter_num)
+
+                        # check for space above letters
+
+                        above_space_available = 0
+                        items_above = [x for x in out_board[row_num:][square_num]]
+
+                        print(items_above)
+
+                        # check sufficient space after letter:
+                        after_space_available = 0
+                        for square in row[square_num+1:]:
+                            if square == '.':
+                                after_space_available += 1
+                            else:  #  if not consecutive '.'s break
+                                break
+                        if after_space_needed <= after_space_available:
+                            enough_space_right = True
+
+                        # check sufficient space before letter:
+                        before_space_available = 0
+                        for square in reversed(row[:square_num]):
+                            if square == '.':
+                                before_space_available += 1
+                            else:
+                                break  #  if not consecutive '.'s break
+                        if before_space_needed <= before_space_available:
+                            enough_space_left = True
+
+                        # print(row)
+
+                        if enough_space_left and enough_space_right or enough_space_down and enough_space_up:
+                            print(
+                                f'Space right: {enough_space_right}\nSpace left: {enough_space_left}\nSpace down: {enough_space_down}\nSpace up: {enough_space_up}')
+                            return True
 
 
 scrabble = Scrabble()
 
 
-
-# user_letters = 'carlivnalrienvrealinvaer'
-# # board = {'0': 'A', '1': 'F', '2': 'S', '3': 'D', '4': 'A', '5': '.', '6': '.', '7': '.', '8': '.', '9': '.', '10': '.', '11': '.', '12': '.', '13': '.', '14': '.', '15': '.', '16': '.', '17': '.', '18': '.', '19': '.', '20': '.', '21': '.', '22': '.', '23': '.', '24': '.', '25': '.', '26': '.', '27': '.', '28': '.', '29': '.', '30': '.', '31': '.', '32': '.', '33': '.', '34': '.', '35': '.', '36': '.', '37': '.', '38': '.', '39': '.', '40': '.', '41': '.', '42': '.', '43': '.', '44': '.', '45': '.', '46': '.', '47': '.', '48': '.', '49': '.', '50': '.', '51': '.', '52': '.', '53': '.', '54': '.', '55': '.', '56': '.', '57': '.', '58': '.', '59': '.', '60': '.', '61': '.', '62': '.', '63': '.', '64': '.', '65': '.', '66': '.', '67': '.', '68': '.', '69': '.', '70': '.', '71': '.', '72': '.', '73': '.', '74': '.', '75': '.', '76': '.', '77': '.', '78': '.', '79': '.', '80': '.', '81': '.', '82': '.', '83': '.', '84': '.', '85': '.', '86': '.', '87': '.', '88': '.', '89': '.', '90': '.', '91': '.', '92': '.', '93': '.', '94': '.', '95': '.', '96': '.', '97': '.', '98': '.', '99': '.', '100': '.', '101': '.', '102': '.', '103': '.', '104': '.', '105': '.', '106': '.', '107': '.', '108': '.', '109': '.', '110': '.', '111': '.', '112': '.', '113': '.', '114': '.', '115': '.', '116': '.',
-#         #  '117': '.', '118': '.', '119': '.', '120': '.', '121': '.', '122': '.', '123': '.', '124': '.', '125': '.', '126': '.', '127': '.', '128': '.', '129': '.', '130': '.', '131': '.', '132': '.', '133': '.', '134': '.', '135': '.', '136': '.', '137': '.', '138': '.', '139': '.', '140': '.', '141': '.', '142': '.', '143': '.', '144': '.', '145': '.', '146': '.', '147': '.', '148': '.', '149': '.', '150': '.', '151': '.', '152': '.', '153': '.', '154': '.', '155': '.', '156': '.', '157': '.', '158': '.', '159': '.', '160': '.', '161': '.', '162': '.', '163': '.', '164': '.', '165': '.', '166': '.', '167': '.', '168': '.', '169': '.', '170': '.', '171': '.', '172': '.', '173': '.', '174': '.', '175': '.', '176': '.', '177': '.', '178': '.', '179': '.', '180': '.', '181': '.', '182': '.', '183': '.', '184': '.', '185': '.', '186': '.', '187': '.', '188': '.', '189': '.', '190': '.', '191': '.', '192': '.', '193': '.', '194': '.', '195': '.', '196': '.', '197': '.', '198': '.', '199': '.', '200': '.', '201': '.', '202': '.', '203': '.', '204': '.', '205': '.', '206': '.', '207': '.', '208': '.', '209': '.', '210': '.', '211': '.', '212': '.', '213': '.', '214': '.', '215': '.', '216': '.', '217': '.', '218': '.', '219': '.', '220': '.', '221': '.', '222': '.', '223': '.', '224': '.'}
+user_letters = 'carlivnalrienvrealinvaer'
+board = {'0': '.', '1': 'C', '2': '.', '3': 'Z', '4': '.', '5': '.', '6': '.', '7': '.', '8': '.', '9': '.', '10': '.', '11': '.', '12': '.', '13': '.', '14': 'C', '15': '.', '16': '.', '17': '.', '18': '.', '19': '.', '20': '.', '21': '.', '22': '.', '23': '.', '24': '.', '25': '.', '26': '.', '27': '.', '28': '.', '29': '.', '30': '.', '31': '.', '32': '.', '33': '.', '34': '.', '35': '.', '36': '.', '37': '.', '38': '.', '39': '.', '40': '.', '41': '.', '42': '.', '43': '.', '44': '.', '45': '.', '46': '.', '47': '.', '48': '.', '49': '.', '50': '.', '51': '.', '52': '.', '53': '.', '54': '.', '55': '.', '56': '.', '57': '.', '58': '.', '59': '.', '60': '.', '61': '.', '62': '.', '63': '.', '64': '.', '65': '.', '66': '.', '67': '.', '68': '.', '69': '.', '70': '.', '71': '.', '72': '.', '73': '.', '74': '.', '75': '.', '76': '.', '77': '.', '78': '.', '79': '.', '80': '.', '81': '.', '82': '.', '83': '.', '84': '.', '85': '.', '86': '.', '87': '.', '88': '.', '89': '.', '90': '.', '91': '.', '92': '.', '93': '.', '94': '.', '95': '.', '96': '.', '97': '.', '98': '.', '99': '.', '100': '.', '101': '.', '102': '.', '103': '.', '104': '.', '105': '.', '106': '.', '107': '.', '108': '.', '109': '.', '110': '.', '111': '.', '112': '.', '113': '.', '114': '.', '115': '.', '116': '.',
+         '117': '.', '118': '.', '119': '.', '120': '.', '121': '.', '122': '.', '123': '.', '124': '.', '125': '.', '126': '.', '127': '.', '128': '.', '129': '.', '130': '.', '131': '.', '132': '.', '133': '.', '134': '.', '135': '.', '136': '.', '137': '.', '138': '.', '139': '.', '140': '.', '141': '.', '142': '.', '143': '.', '144': '.', '145': '.', '146': '.', '147': '.', '148': '.', '149': '.', '150': '.', '151': '.', '152': '.', '153': '.', '154': '.', '155': '.', '156': '.', '157': '.', '158': '.', '159': '.', '160': '.', '161': '.', '162': '.', '163': '.', '164': '.', '165': '.', '166': '.', '167': '.', '168': '.', '169': '.', '170': '.', '171': '.', '172': '.', '173': '.', '174': '.', '175': '.', '176': '.', '177': '.', '178': '.', '179': '.', '180': '.', '181': '.', '182': '.', '183': '.', '184': '.', '185': '.', '186': '.', '187': '.', '188': '.', '189': '.', '190': '.', '191': '.', '192': '.', '193': '.', '194': '.', '195': '.', '196': '.', '197': '.', '198': '.', '199': '.', '200': '.', '201': '.', '202': '.', '203': '.', '204': '.', '205': '.', '206': '.', '207': '.', '208': '.', '209': '.', '210': '.', '211': '.', '212': '.', '213': '.', '214': '.', '215': '.', '216': '.', '217': '.', '218': '.', '219': '.', '220': '.', '221': '.', '222': '.', '223': '.', '224': 'Z'}
 # board2 = {'0': '.', '1': '.', '2': '.', '3': 'E', '4': 'R', '5': 'G', '6': 'V', '7': 'E', '8': 'R', '9': 'G', '10': '.', '11': '.', '12': '.', '13': 'S', '14': '.', '15': '.', '16': '.', '17': '.', '18': '.', '19': '.', '20': '.', '21': 'O', '22': '.', '23': '.', '24': '.', '25': '.', '26': 'S', '27': '.', '28': 'E', '29': '.', '30': '.', '31': 'S', '32': 'S', '33': 'R', '34': 'G', '35': 'S', '36': 'I', '37': 'R', '38': 'G', '39': 'E', '40': 'S', '41': 'E', '42': 'R', '43': 'R', '44': 'S', '45': '.', '46': 'E', '47': '.', '48': '.', '49': '.', '50': '.', '51': 'H', '52': '.', '53': 'S', '54': '.', '55': '.', '56': 'R', '57': '.', '58': 'G', '59': '.', '60': '.', '61': 'R', '62': '.', '63': '.', '64': '.', '65': '.', '66': 'B', '67': '.', '68': 'E', '69': '.', '70': '.', '71': 'G', '72': '.', '73': 'S', '74': '.', '75': 'B', '76': 'L', '77': 'X', '78': 'K', '79': 'I', '80': 'T', '81': 'O', '82': 'B', '83': 'S', '84': 'I', '85': 'O', '86': 'N', '87': 'T', '88': 'L', '89': 'N', '90': '.', '91': 'S', '92': '.', '93': '.', '94': 'E', '95': '.', '96': 'P', '97': '.', '98': 'R', '99': '.', '100': '.', '101': 'E', '102': '.', '103': 'R', '104': '.', '105': 'R', '106': 'P', '107': 'I', '108': 'O', '109': 'R', '110': 'P', '111': 'O', '112': 'G', '113': 'N', '114': 'B', '115': 'P', '116': 'O',
-#           '117': 'E', '118': 'S', '119': 'N', '120': '.', '121': 'R', '122': '.', '123': '.', '124': 'G', '125': '.', '126': 'C', '127': '.', '128': 'E', '129': '.', '130': '.', '131': 'G', '132': '.', '133': 'S', '134': '.', '135': '.', '136': 'G', '137': '.', '138': '.', '139': 'S', '140': '.', '141': 'I', '142': '.', '143': 'G', '144': '.', '145': '.', '146': 'S', '147': '.', '148': 'E', '149': '.', '150': '.', '151': 'S', '152': '.', '153': '.', '154': 'E', '155': '.', '156': 'V', '157': '.', '158': 'S', '159': '.', '160': '.', '161': 'E', '162': '.', '163': 'R', '164': '.', '165': 'S', '166': 'O', '167': 'R', '168': 'M', '169': 'V', '170': 'B', '171': 'S', '172': 'O', '173': 'T', '174': 'H', '175': 'N', '176': 'W', '177': 'P', '178': 'O', '179': 'L', '180': '.', '181': 'R', '182': '.', '183': '.', '184': 'E', '185': '.', '186': 'B', '187': '.', '188': 'R', '189': '.', '190': '.', '191': 'G', '192': '.', '193': 'E', '194': '.', '195': '.', '196': 'G', '197': '.', '198': '.', '199': 'S', '200': '.', '201': 'P', '202': '.', '203': 'G', '204': '.', '205': '.', '206': 'S', '207': '.', '208': 'S', '209': '.', '210': '.', '211': 'R', '212': '.', '213': '.', '214': 'E', '215': '.', '216': 'L', '217': '.', '218': 'R', '219': '.', '220': '.', '221': 'G', '222': '.', '223': 'G', '224': '.'}
+#   '117': 'E', '118': 'S', '119': 'N', '120': '.', '121': 'R', '122': '.', '123': '.', '124': 'G', '125': '.', '126': 'C', '127': '.', '128': 'E', '129': '.', '130': '.', '131': 'G', '132': '.', '133': 'S', '134': '.', '135': '.', '136': 'G', '137': '.', '138': '.', '139': 'S', '140': '.', '141': 'I', '142': '.', '143': 'G', '144': '.', '145': '.', '146': 'S', '147': '.', '148': 'E', '149': '.', '150': '.', '151': 'S', '152': '.', '153': '.', '154': 'E', '155': '.', '156': 'V', '157': '.', '158': 'S', '159': '.', '160': '.', '161': 'E', '162': '.', '163': 'R', '164': '.', '165': 'S', '166': 'O', '167': 'R', '168': 'M', '169': 'V', '170': 'B', '171': 'S', '172': 'O', '173': 'T', '174': 'H', '175': 'N', '176': 'W', '177': 'P', '178': 'O', '179': 'L', '180': '.', '181': 'R', '182': '.', '183': '.', '184': 'E', '185': '.', '186': 'B', '187': '.', '188': 'R', '189': '.', '190': '.', '191': 'G', '192': '.', '193': 'E', '194': '.', '195': '.', '196': 'G', '197': '.', '198': '.', '199': 'S', '200': '.', '201': 'P', '202': '.', '203': 'G', '204': '.', '205': '.', '206': 'S', '207': '.', '208': 'S', '209': '.', '210': '.', '211': 'R', '212': '.', '213': '.', '214': 'E', '215': '.', '216': 'L', '217': '.', '218': 'R', '219': '.', '220': '.', '221': 'G', '222': '.', '223': 'G', '224': '.'}
 
-
-
+start = datetime.now()
+print(scrabble._fits_board(board, 'cat'))
+print(f'Duration: {datetime.now() - start}')
 # print(scrabble.find_words(board2, user_letters))
-
 
 # start = datetime.now()
 # possible_words = scrabble.find_words(board2, user_letters)
