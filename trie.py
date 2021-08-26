@@ -1,4 +1,3 @@
-from playground import fits_left_right
 from scrabbleWords import scrabble_words
 from datetime import datetime
 

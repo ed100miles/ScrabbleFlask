@@ -8,8 +8,12 @@ const FOUND_WORDS_HEADER = document.querySelector('.found_words_header')
 const ACROSS_BTN = document.querySelector('#across_btn')
 const DOWN_BTN = document.querySelector('#down_btn')
 
+
 // Get words fetch request:
 function lettersChange(e) {
+    controller.abort()
+    controller = new AbortController()
+
     function getBoardDict() {
         let board_dict = {}
         for (let x = 0; x < 225; x++) {
@@ -23,11 +27,13 @@ function lettersChange(e) {
     let json_body = { 'userLetters': userLetters, 'board_dict': board_dict }
     // let allLetters = stringify(userLetters) + stringify(board_dict)
     // console.log(userLetters)
+    
     fetch(`${window.origin}/`, {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify(json_body),
         cache: 'no-cache',
+        signal: controller.signal,
         headers: new Headers({
             'content-type': 'application/json'
         })
@@ -51,6 +57,14 @@ function lettersChange(e) {
                     FOUND_WORDS_HEADER.textContent = 'Enter your letters below to see what words you can make.'
                 }
             })
+        })
+        .catch(function(e){
+            if(e.name == 'AbortError'){
+                console.log('User abored fetch')
+            }
+            else{
+                throw e;
+            }
         })
 }
 
@@ -123,7 +137,7 @@ targetTile.classList.add('selectedSquare') // and style
 let play_across = true
 let play_down = false
 FOUND_WORDS_HEADER.textContent = 'Enter your letters below to see what words you can make.'
-
+let controller = new AbortController() // to abort previous fetch if new one called
 
 // Event listners:
 
