@@ -1,3 +1,12 @@
+
+
+
+// TODO: DEBOUNCE FETCH
+
+
+
+
+
 console.log('scrabble.js imported successfully.')
 
 // Named DOM elements
@@ -8,8 +17,12 @@ const FOUND_WORDS_HEADER = document.querySelector('.found_words_header')
 const ACROSS_BTN = document.querySelector('#across_btn')
 const DOWN_BTN = document.querySelector('#down_btn')
 
+
 // Get words fetch request:
 function lettersChange(e) {
+    controller.abort()
+    controller = new AbortController()
+
     function getBoardDict() {
         let board_dict = {}
         for (let x = 0; x < 225; x++) {
@@ -23,11 +36,13 @@ function lettersChange(e) {
     let json_body = { 'userLetters': userLetters, 'board_dict': board_dict }
     // let allLetters = stringify(userLetters) + stringify(board_dict)
     // console.log(userLetters)
+    
     fetch(`${window.origin}/`, {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify(json_body),
         cache: 'no-cache',
+        signal: controller.signal,
         headers: new Headers({
             'content-type': 'application/json'
         })
@@ -52,7 +67,36 @@ function lettersChange(e) {
                 }
             })
         })
+        .catch(function(e){
+            if(e.name == 'AbortError'){
+                console.log('User abored fetch')
+            }
+            else{
+                throw e;
+            }
+        })
 }
+
+// Debouncer for lettersChange - https://davidwalsh.name/javascript-debounce-function
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+
+let debounce_letters_changed = debounce(function(e) {
+	lettersChange(e)
+}, 500);
+
 
 // Board typing:
 function boardType(e) {
@@ -123,13 +167,13 @@ targetTile.classList.add('selectedSquare') // and style
 let play_across = true
 let play_down = false
 FOUND_WORDS_HEADER.textContent = 'Enter your letters below to see what words you can make.'
-
+let controller = new AbortController() // to abort previous fetch if new one called
 
 // Event listners:
 
 document.addEventListener('keyup', boardType)
 
-USER_LETTERS.addEventListener('keyup', lettersChange)
+USER_LETTERS.addEventListener('keyup', debounce_letters_changed)
 
 BOARD.addEventListener('click', (e) => {
     //  Add selectedSquare class to clicked tile and remove from old
