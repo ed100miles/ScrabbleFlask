@@ -1,12 +1,3 @@
-
-
-
-// TODO: DEBOUNCE FETCH
-
-
-
-
-
 console.log('scrabble.js imported successfully.')
 
 // Named DOM elements
@@ -16,7 +7,8 @@ const FOUND_WORDS_LIST = document.querySelector('.found_words_list')
 const FOUND_WORDS_HEADER = document.querySelector('.found_words_header')
 const ACROSS_BTN = document.querySelector('#across_btn')
 const DOWN_BTN = document.querySelector('#down_btn')
-
+const DEFINITION_CONTAINER = document.querySelector('.definition_container')
+let possible_words_dict = null
 
 // Get words fetch request:
 function lettersChange(e) {
@@ -51,14 +43,17 @@ function lettersChange(e) {
             response.json().then(function (data) {
                 word_count = 0
                 FOUND_WORDS_LIST.textContent = ''
+                possible_words_dict = {}
                 for (const [key, value] of Object.entries(data)) {
                     let score = key
                     // value is a list of (word, definition) tuples so iterates through this list
                     for (let item of value) {
                         let word = document.createElement('div')
                         word.textContent = `${item[0]}: ${score} points`
+                        word.classList.add('found_word')
                         FOUND_WORDS_LIST.prepend(word)
                         word_count += 1
+                        possible_words_dict[item[0]] = item[1]
                     }
                 }
                 FOUND_WORDS_HEADER.textContent = `${word_count} possible words:`
@@ -175,6 +170,11 @@ document.addEventListener('keyup', boardType)
 
 USER_LETTERS.addEventListener('keyup', debounce_letters_changed)
 
+FOUND_WORDS_LIST.addEventListener('mouseover', function(e){
+    let found_word = e.toElement.textContent.split(':')[0]
+    DEFINITION_CONTAINER.textContent = possible_words_dict[found_word]
+})
+
 BOARD.addEventListener('click', (e) => {
     //  Add selectedSquare class to clicked tile and remove from old
     if (e.target.id != '') {
@@ -198,3 +198,4 @@ ACROSS_BTN.addEventListener('click', (e) => {
     ACROSS_BTN.classList.add('clicked')
     DOWN_BTN.classList.remove('clicked')
 })
+

@@ -95,4 +95,13 @@ h1 {
 .form_container .user_letters {
   font-size: 2vmin;
 }
+
+.definition_container {
+  margin: auto;
+  background-color: #7a95d1;
+  color: wheat;
+  text-align: center;
+  width: 80vw;
+  border-radius: 5px;
+}
 /*# sourceMappingURL=scrabble.css.map */
