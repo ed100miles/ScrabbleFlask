@@ -74,7 +74,7 @@ class Trie:
 class Scrabble():
     """Composite class providing public interface for implementation of scrabble game"""
 
-    def __init__(self):
+    def __init__(self, scrabble_words:dict) -> None:
         self._trie = Trie()
         self._scoreWord = ScoreWord()  # non-pub instance of ScoreWord class
         self.check_fits = FitsBoard()
@@ -104,6 +104,7 @@ class Scrabble():
             possible_words = self._trie.find_words(
                 user_letters)                                   # just return words user can make
 
+        # add scores to words: 
         possible_words_with_scores_and_defs = self._scoreWord._score_word_dict(
             possible_words)
         return possible_words_with_scores_and_defs
@@ -205,7 +206,7 @@ class FitsBoard:
         return fits_horizontal or fits_vertical
 
 
-scrabble = Scrabble()
+scrabble = Scrabble(scrabble_words=scrabble_words)
 
 # user_letters = 'cat'
 # board = {'0': '.', '1': '.', '2': '.', '3': '.', '4': '.', '5': '.', '6': '.', '7': '.', '8': '.', '9': '.', '10': '.', '11': '.', '12': '.', '13': '.', '14': '.', '15': '.', '16': '.', '17': '.', '18': '.', '19': '.', '20': '.', '21': '.', '22': '.', '23': '.', '24': '.', '25': '.', '26': '.', '27': '.', '28': '.', '29': '.', '30': '.', '31': '.', '32': '.', '33': '.', '34': '.', '35': '.', '36': '.', '37': '.', '38': '.', '39': '.', '40': '.', '41': '.', '42': '.', '43': '.', '44': '.', '45': '.', '46': '.', '47': '.', '48': '.', '49': '.', '50': '.', '51': '.', '52': '.', '53': '.', '54': '.', '55': '.', '56': '.', '57': '.', '58': '.', '59': '.', '60': '.', '61': '.', '62': '.', '63': '.', '64': '.', '65': '.', '66': '.', '67': '.', '68': '.', '69': '.', '70': '.', '71': '.', '72': '.', '73': '.', '74': '.', '75': '.', '76': '.', '77': '.', '78': '.', '79': '.', '80': '.', '81': '.', '82': '.', '83': '.', '84': '.', '85': '.', '86': '.', '87': '.', '88': '.', '89': '.', '90': '.', '91': '.', '92': '.', '93': '.', '94': '.', '95': '.', '96': '.', '97': '.', '98': '.', '99': '.', '100': '.', '101': '.', '102': '.', '103': '.', '104': '.', '105': '.', '106': '.', '107': '.', '108': '.', '109': '.', '110': '.', '111': '.', '112': '.', '113': '.', '114': '.', '115': '.', '116': '.',
