@@ -1,3 +1,4 @@
+from typing import Tuple
 from scrabbleWords import scrabble_words
 from datetime import datetime
 
@@ -8,17 +9,17 @@ class Trie:
     class _Node:
         """Non-public Node subclass for Trie class"""
 
-        def __init__(self, letter=None, is_word=False):
+        def __init__(self, letter: str = None, is_word: bool = False) -> None:
             """Create Trie node instance"""
             self.letter = letter
             self.is_word = is_word
             self.children = {}
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialise instance of Trie class and set root"""
         self.root = self._Node()
 
-    def add_word(self, word: str):
+    def add_word(self, word: str) -> None:
         """Adds word string to the Trie tree"""
         index_node = self.root
         is_word = False
@@ -33,7 +34,7 @@ class Trie:
             # move index node to new child
             index_node = index_node.children[letter]
 
-    def find_words(self, user_letters: str):
+    def find_words(self, user_letters: str) -> dict:
         """Returns dict of words in Trie with matching letters in user_letters string.
             Dict comprised of matching words as keys and definitions as values."""
         self.found_words = []   # create or clear a list for matching words
@@ -53,7 +54,7 @@ class Trie:
 
     # --- Private methods:
 
-    def _find_words(self, user_letters, node=None):
+    def _find_words(self, user_letters: str, node=None) -> None:
         """Appends to self.found_words list all words added to Trie instance that can be made using user_letters"""
         if node == None:
             node = self.root
@@ -61,7 +62,7 @@ class Trie:
             self.found_words.append(node.is_word)
         # Base case:
         if len(node.children) == 0 or sum(user_letters.values()) == 0:
-            return
+            return None
         # else recur down each node.child where node.child in user_letters and count > 0
         for child in node.children:
             if child in user_letters and user_letters[child] > 0:
@@ -80,7 +81,7 @@ class Scrabble():
         for word in scrabble_words:
             self._trie.add_word(word.lower())
 
-    def find_words(self, board: dict, user_letters: str):
+    def find_words(self, board: dict, user_letters: str) -> dict:
         """Takes dict of letters on board and string of users letters and return dict of possible words + definitions"""
         possible_words = {}
         unique_board_letters = set()
@@ -89,12 +90,12 @@ class Scrabble():
                 unique_board_letters.add(board[key].lower())
 
         if len(unique_board_letters) > 0:   # if there's any letters on the board
-            for letter in unique_board_letters:     # check what words can be made
+            for letter in unique_board_letters:     # check what words can be made w/ board+user letters
                 user_letters_and_board_letter = user_letters + letter
                 found_words_dict = self._trie.find_words(
                     user_letters_and_board_letter)
                 for word in found_words_dict:
-                    # if word can fit on the board
+                    # check if word can fit on the board:
                     if self.check_fits.fits_board(board, word):
                         if word not in possible_words:
                             # add word to dict with definition as key
@@ -102,8 +103,6 @@ class Scrabble():
         else:                                                   # if there's no letters on the board
             possible_words = self._trie.find_words(
                 user_letters)                                   # just return words user can make
-
-        #  Here we want to take possible words and see if they fit the board?
 
         possible_words_with_scores_and_defs = self._scoreWord._score_word_dict(
             possible_words)
@@ -138,9 +137,9 @@ class ScoreWord:
 class FitsBoard:
     """Component class providing methods that confirm if a word fits on a given board"""
 
-    def _check_horizontal(self, word, out_board):
-        """Iterates through word and board running fits_left_right method. 
-        Returns True if there's a position where the word fits horizontally on board."""
+    def _check_horizontal(self, word: str, out_board: list) -> bool:
+        """Iterates through word and board calling fits_left_right method. 
+        Returns True if there's a position where the word fits horizontally on the board, else False."""
         for letter_num, letter in enumerate(word):
             for row in out_board:
                 for square_num, square in enumerate(row):
@@ -152,25 +151,22 @@ class FitsBoard:
                             return True
         return False
 
-    def _fits_left_right(self, word, letter_num, letter, row, square_num, square):
+    def _fits_left_right(self, word: str, letter_num: int, letter: str,
+                         row: int, square_num: int, square: str) -> tuple:
         """Returns tuple (True, True) if a word fits horizontally at a given position on a board."""
         enough_space_right = False
         enough_space_left = False
-
         # calculate space required before and after letter for word to fit
         before_space_needed = word.index(letter, letter_num)
-
         if square_num != '0':
             #  +1 to ensure there's space before any letters if not on left edge of board
             before_space_needed + 1
-
         after_space_needed = len(
             word) - word.index(letter, letter_num)
         # no space needed to right if last letter of word is on right edge of the board
         # square_num == 14 and letter is word[-1] or
         if square_num + after_space_needed == 15:
             after_space_needed -= 1
-
         # check sufficient space after letter:
         after_space_available = 0
         for square in row[square_num+1:]:
@@ -180,7 +176,6 @@ class FitsBoard:
                 break
         if after_space_needed <= after_space_available:
             enough_space_right = True
-
         # check sufficient space before letter:
         before_space_available = 0
         for square in reversed(row[:square_num]):
@@ -190,29 +185,23 @@ class FitsBoard:
                 break  #  if not consecutive '.'s break
         if before_space_needed <= before_space_available:
             enough_space_left = True
-
         return (enough_space_left, enough_space_right)
 
-    def fits_board(self, board, word):
+    def fits_board(self, board: dict, word: str) -> bool:
         """Returns True if word fits either horizontally or vertically on a board and doesn't clash with other letters, else return False. """
         # Start by creating empty 2d array board representation:
         out_board = [[None] * 15 for i in range(15)]
-
         # edit board to reflect input:
         for x in board.items():
             key, value = x
             y = int(key) // 15
             z = int(key) % 15
             out_board[y][z] = value
-
         fits_horizontal = self._check_horizontal(word, out_board)
-
         # rotatate the board 270 degrees to check if word fits vertically:
         for _ in range(3):
             out_board = list(zip(*out_board[::-1]))
-
         fits_vertical = self._check_horizontal(word, out_board)
-
         return fits_horizontal or fits_vertical
 
 

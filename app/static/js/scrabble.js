@@ -8,7 +8,6 @@ const FOUND_WORDS_HEADER = document.querySelector('.found_words_header')
 const ACROSS_BTN = document.querySelector('#across_btn')
 const DOWN_BTN = document.querySelector('#down_btn')
 const DEFINITION_CONTAINER = document.querySelector('.definition_container')
-let possible_words_dict = null
 
 // Get words fetch request:
 function lettersChange(e) {
@@ -161,6 +160,7 @@ let targetTile = document.querySelector('#coord-8-8') // Initialize targetTile t
 targetTile.classList.add('selectedSquare') // and style
 let play_across = true
 let play_down = false
+let possible_words_dict = null
 FOUND_WORDS_HEADER.textContent = 'Enter your letters below to see what words you can make.'
 let controller = new AbortController() // to abort previous fetch if new one called
 
