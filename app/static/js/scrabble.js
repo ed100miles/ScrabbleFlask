@@ -97,7 +97,6 @@ let debounce_letters_changed = debounce(function(e) {
 	lettersChange(e)
 }, 500);
 
-
 // Board typing:
 function boardType(e) {
     function board_type_update_end() {
