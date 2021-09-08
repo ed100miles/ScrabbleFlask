@@ -206,7 +206,7 @@ class FitsBoard:
         return fits_horizontal or fits_vertical
 
 
-# scrabble = Scrabble(scrabble_words=scrabble_words)
+scrabble = Scrabble(scrabble_words=scrabble_words)
 
 user_letters = 'cat'
 
