@@ -209,17 +209,21 @@ if __name__ == "__main__":
 
 # TODO: Write some proper unit tests:
 
-    user_letters = 'cat'
+    # Quick tests setup:
+    fits = FitsBoard()
+    user_letters = 'arbon'
     board = {str(key):'.' for key in range(225)}
     board['2'] = 'C'
 
-    fits = FitsBoard()
-    start = datetime.now()
-    print(fits.fits_board(board, 'cat'))
-    print(f'Duration: {datetime.now() - start}')
+    # find words tests:
+    assert list(scrabble.find_words(board, user_letters).keys()) == [7, 6, 5, 9, 8, 10]
 
+    # fits board tests:
+    assert fits.fits_board(board, 'cat') == True
+    board['224'] = 'B'
+    assert fits.fits_board(board, 'bat') == False
 
-
+    print('Tests sucessfull')
 
 # print(board)
 
