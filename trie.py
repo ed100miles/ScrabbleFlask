@@ -1,7 +1,7 @@
-from typing import Tuple, Dict, Union, List
+from typing import Any, Dict, Union, List
 from scrabbleWords import scrabble_words
 from datetime import datetime
-
+from collections import Counter
 
 class Trie:
     """Create and populate Trie data structure and find words that can be made with given letters."""
@@ -38,13 +38,8 @@ class Trie:
         """Returns dict of words in Trie with matching letters in user_letters string.
             Dict comprised of matching words as keys and definitions as values."""
         self.found_words:List[str] = []   # create or clear a list for matching words
-        user_letters_dict = {}  # create dict of user letters e.g {'a':3}
-        for letter in user_letters:
-            if letter not in user_letters_dict:
-                user_letters_dict[letter] = 1
-            else:
-                user_letters_dict[letter] += 1
-        self._find_words(user_letters_dict)
+        self._find_words(Counter(user_letters))
+
         # convert found words to dict and add definitions for values:
         found_words_and_defs = {}
         for word in self.found_words:
@@ -72,12 +67,12 @@ class Trie:
 
 
 class Scrabble():
-    """Composite class providing public interface for implementation of scrabble game"""
+    """Composite/Facade class providing public interface for implementation of scrabble game"""
 
     def __init__(self, scrabble_words:dict) -> None:
-        self._trie = Trie()
-        self._scoreWord = ScoreWord()  # non-pub instance of ScoreWord class
+        self._scoreWord = ScoreWord() 
         self.check_fits = FitsBoard()
+        self._trie = Trie()
         for word in scrabble_words:
             self._trie.add_word(word.lower())
 
@@ -118,20 +113,20 @@ class ScoreWord:
         _score = 0
         _letter_scores = {'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4, 'i': 1, 'j': 8, 'k': 5, 'l': 1,
                           'm': 3, 'n': 1, 'o': 1, 'p': 3, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 1, 'v': 8, 'w': 4, 'x': 8, 'y': 4, 'z': 10}
-        _score_word = word.lower()  # handle if casing is wrong
-        for letter in _score_word:
+        _word_to_score = word.lower()  # handle if casing is wrong
+        for letter in _word_to_score:
             _score += _letter_scores[letter]
         return _score
 
-    def _score_word_dict(self, word_dict: dict):
+    def _score_word_dict(self, word_itter: dict):
         """Returns dict with score as key and list of tuples (word, definition) as vaule. Takes dict of words:definitions as input."""
         words_defs_scores_dict = {}
-        for word in word_dict:
+        for word in word_itter:
             score = self._score_word(word)
             if score not in words_defs_scores_dict:
-                words_defs_scores_dict[score] = [(word, word_dict[word])]
+                words_defs_scores_dict[score] = [(word, word_itter[word])]
             else:
-                words_defs_scores_dict[score].append((word, word_dict[word]))
+                words_defs_scores_dict[score].append((word, word_itter[word]))
         return words_defs_scores_dict
 
 
@@ -191,7 +186,7 @@ class FitsBoard:
     def fits_board(self, board: dict, word: str) -> bool:
         """Returns True if word fits either horizontally or vertically on a board and doesn't clash with other letters, else return False. """
         # Start by creating empty 2d array board representation:
-        out_board = [[None] * 15 for i in range(15)]
+        out_board:List = [[None] * 15 for i in range(15)]
         # edit board to reflect input:
         for x in board.items():
             key, value = x
@@ -208,16 +203,23 @@ class FitsBoard:
 
 scrabble = Scrabble(scrabble_words=scrabble_words)
 
-user_letters = 'cat'
 
-board = {str(key):'.' for key in range(225)}
+if __name__ == "__main__":
+    print('I\'m your main man')
 
-board['1'] = 'C'
+# TODO: Write some proper unit tests:
 
-fits = FitsBoard()
-start = datetime.now()
-print(fits.fits_board(board, 'cat'))
-print(f'Duration: {datetime.now() - start}')
+    user_letters = 'cat'
+    board = {str(key):'.' for key in range(225)}
+    board['2'] = 'C'
+
+    fits = FitsBoard()
+    start = datetime.now()
+    print(fits.fits_board(board, 'cat'))
+    print(f'Duration: {datetime.now() - start}')
+
+
+
 
 # print(board)
 
