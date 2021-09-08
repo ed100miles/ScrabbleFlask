@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Dict, Union, List
 from scrabbleWords import scrabble_words
 from datetime import datetime
 
@@ -9,11 +9,11 @@ class Trie:
     class _Node:
         """Non-public Node subclass for Trie class"""
 
-        def __init__(self, letter: str = None, is_word: bool = False) -> None:
+        def __init__(self, letter: str = None, is_word:Union[bool, str] = False) -> None:
             """Create Trie node instance"""
             self.letter = letter
             self.is_word = is_word
-            self.children = {}
+            self.children: Dict  = {}
 
     def __init__(self) -> None:
         """Initialise instance of Trie class and set root"""
@@ -22,7 +22,7 @@ class Trie:
     def add_word(self, word: str) -> None:
         """Adds word string to the Trie tree"""
         index_node = self.root
-        is_word = False
+        is_word:Union[bool,str] = False
         for letter_index, letter in enumerate(word):
             if letter not in index_node.children:
                 if letter_index == len(word) - 1:    # if iter is last letter
@@ -37,7 +37,7 @@ class Trie:
     def find_words(self, user_letters: str) -> dict:
         """Returns dict of words in Trie with matching letters in user_letters string.
             Dict comprised of matching words as keys and definitions as values."""
-        self.found_words = []   # create or clear a list for matching words
+        self.found_words:List[str] = []   # create or clear a list for matching words
         user_letters_dict = {}  # create dict of user letters e.g {'a':3}
         for letter in user_letters:
             if letter not in user_letters_dict:
@@ -54,7 +54,7 @@ class Trie:
 
     # --- Private methods:
 
-    def _find_words(self, user_letters: str, node=None) -> None:
+    def _find_words(self, user_letters:Dict[str,int], node=None) -> None:
         """Appends to self.found_words list all words added to Trie instance that can be made using user_letters"""
         if node == None:
             node = self.root
@@ -118,7 +118,7 @@ class ScoreWord:
         _score = 0
         _letter_scores = {'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4, 'i': 1, 'j': 8, 'k': 5, 'l': 1,
                           'm': 3, 'n': 1, 'o': 1, 'p': 3, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 1, 'v': 8, 'w': 4, 'x': 8, 'y': 4, 'z': 10}
-        _score_word = word.lower()  # just incase casing is wrong
+        _score_word = word.lower()  # handle if casing is wrong
         for letter in _score_word:
             _score += _letter_scores[letter]
         return _score
@@ -138,7 +138,7 @@ class ScoreWord:
 class FitsBoard:
     """Component class providing methods that confirm if a word fits on a given board"""
 
-    def _check_horizontal(self, word: str, out_board: list) -> bool:
+    def _check_horizontal(self, word: str, out_board: List) -> bool:
         """Iterates through word and board calling fits_left_right method. 
         Returns True if there's a position where the word fits horizontally on the board, else False."""
         for letter_num, letter in enumerate(word):
@@ -153,7 +153,7 @@ class FitsBoard:
         return False
 
     def _fits_left_right(self, word: str, letter_num: int, letter: str,
-                         row: int, square_num: int, square: str) -> tuple:
+                         row: List, square_num: int, square: str) -> tuple:
         """Returns tuple (True, True) if a word fits horizontally at a given position on a board."""
         enough_space_right = False
         enough_space_left = False
@@ -206,20 +206,20 @@ class FitsBoard:
         return fits_horizontal or fits_vertical
 
 
-scrabble = Scrabble(scrabble_words=scrabble_words)
+# scrabble = Scrabble(scrabble_words=scrabble_words)
 
-# user_letters = 'cat'
-# board = {'0': '.', '1': '.', '2': '.', '3': '.', '4': '.', '5': '.', '6': '.', '7': '.', '8': '.', '9': '.', '10': '.', '11': '.', '12': '.', '13': '.', '14': '.', '15': '.', '16': '.', '17': '.', '18': '.', '19': '.', '20': '.', '21': '.', '22': '.', '23': '.', '24': '.', '25': '.', '26': '.', '27': '.', '28': '.', '29': '.', '30': '.', '31': '.', '32': '.', '33': '.', '34': '.', '35': '.', '36': '.', '37': '.', '38': '.', '39': '.', '40': '.', '41': '.', '42': '.', '43': '.', '44': '.', '45': '.', '46': '.', '47': '.', '48': '.', '49': '.', '50': '.', '51': '.', '52': '.', '53': '.', '54': '.', '55': '.', '56': '.', '57': '.', '58': '.', '59': '.', '60': '.', '61': '.', '62': '.', '63': '.', '64': '.', '65': '.', '66': '.', '67': '.', '68': '.', '69': '.', '70': '.', '71': '.', '72': '.', '73': '.', '74': '.', '75': '.', '76': '.', '77': '.', '78': '.', '79': '.', '80': '.', '81': '.', '82': '.', '83': '.', '84': '.', '85': '.', '86': '.', '87': '.', '88': '.', '89': '.', '90': '.', '91': '.', '92': '.', '93': '.', '94': '.', '95': '.', '96': '.', '97': '.', '98': '.', '99': '.', '100': '.', '101': '.', '102': '.', '103': '.', '104': '.', '105': '.', '106': '.', '107': '.', '108': '.', '109': '.', '110': '.', '111': '.', '112': '.', '113': '.', '114': '.', '115': '.', '116': '.',
-#          '117': '.', '118': '.', '119': '.', '120': '.', '121': '.', '122': '.', '123': '.', '124': '.', '125': '.', '126': '.', '127': '.', '128': '.', '129': '.', '130': '.', '131': '.', '132': '.', '133': '.', '134': '.', '135': '.', '136': '.', '137': '.', '138': '.', '139': '.', '140': '.', '141': '.', '142': '.', '143': '.', '144': '.', '145': '.', '146': '.', '147': '.', '148': '.', '149': '.', '150': '.', '151': '.', '152': '.', '153': '.', '154': '.', '155': '.', '156': '.', '157': '.', '158': '.', '159': '.', '160': '.', '161': '.', '162': '.', '163': '.', '164': '.', '165': '.', '166': '.', '167': '.', '168': '.', '169': '.', '170': '.', '171': '.', '172': '.', '173': '.', '174': '.', '175': '.', '176': '.', '177': '.', '178': '.', '179': '.', '180': '.', '181': '.', '182': '.', '183': '.', '184': '.', '185': '.', '186': '.', '187': '.', '188': '.', '189': '.', '190': '.', '191': '.', '192': '.', '193': '.', '194': '.', '195': '.', '196': '.', '197': '.', '198': '.', '199': '.', '200': '.', '201': '.', '202': '.', '203': '.', '204': '.', '205': '.', '206': '.', '207': '.', '208': '.', '209': '.', '210': '.', '211': '.', '212': '.', '213': '.', '214': '.', '215': '.', '216': '.', '217': '.', '218': '.', '219': '.', '220': '.', '221': '.', '222': '.', '223': '.', '224': '.'}
-# board2 = {'0': '.', '1': '.', '2': '.', '3': 'E', '4': 'R', '5': 'G', '6': 'V', '7': 'E', '8': 'R', '9': 'G', '10': '.', '11': '.', '12': '.', '13': 'S', '14': '.', '15': '.', '16': '.', '17': '.', '18': '.', '19': '.', '20': '.', '21': 'O', '22': '.', '23': '.', '24': '.', '25': '.', '26': 'S', '27': '.', '28': 'E', '29': '.', '30': '.', '31': 'S', '32': 'S', '33': 'R', '34': 'G', '35': 'S', '36': 'I', '37': 'R', '38': 'G', '39': 'E', '40': 'S', '41': 'E', '42': 'R', '43': 'R', '44': 'S', '45': '.', '46': 'E', '47': '.', '48': '.', '49': '.', '50': '.', '51': 'H', '52': '.', '53': 'S', '54': '.', '55': '.', '56': 'R', '57': '.', '58': 'G', '59': '.', '60': '.', '61': 'R', '62': '.', '63': '.', '64': '.', '65': '.', '66': 'B', '67': '.', '68': 'E', '69': '.', '70': '.', '71': 'G', '72': '.', '73': 'S', '74': '.', '75': 'B', '76': 'L', '77': 'X', '78': 'K', '79': 'I', '80': 'T', '81': 'O', '82': 'B', '83': 'S', '84': 'I', '85': 'O', '86': 'N', '87': 'T', '88': 'L', '89': 'N', '90': '.', '91': 'S', '92': '.', '93': '.', '94': 'E', '95': '.', '96': 'P', '97': '.', '98': 'R', '99': '.', '100': '.', '101': 'E', '102': '.', '103': 'R', '104': '.', '105': 'R', '106': 'P', '107': 'I', '108': 'O', '109': 'R', '110': 'P', '111': 'O', '112': 'G', '113': 'N', '114': 'B', '115': 'P', '116': 'O',
-#   '117': 'E', '118': 'S', '119': 'N', '120': '.', '121': 'R', '122': '.', '123': '.', '124': 'G', '125': '.', '126': 'C', '127': '.', '128': 'E', '129': '.', '130': '.', '131': 'G', '132': '.', '133': 'S', '134': '.', '135': '.', '136': 'G', '137': '.', '138': '.', '139': 'S', '140': '.', '141': 'I', '142': '.', '143': 'G', '144': '.', '145': '.', '146': 'S', '147': '.', '148': 'E', '149': '.', '150': '.', '151': 'S', '152': '.', '153': '.', '154': 'E', '155': '.', '156': 'V', '157': '.', '158': 'S', '159': '.', '160': '.', '161': 'E', '162': '.', '163': 'R', '164': '.', '165': 'S', '166': 'O', '167': 'R', '168': 'M', '169': 'V', '170': 'B', '171': 'S', '172': 'O', '173': 'T', '174': 'H', '175': 'N', '176': 'W', '177': 'P', '178': 'O', '179': 'L', '180': '.', '181': 'R', '182': '.', '183': '.', '184': 'E', '185': '.', '186': 'B', '187': '.', '188': 'R', '189': '.', '190': '.', '191': 'G', '192': '.', '193': 'E', '194': '.', '195': '.', '196': 'G', '197': '.', '198': '.', '199': 'S', '200': '.', '201': 'P', '202': '.', '203': 'G', '204': '.', '205': '.', '206': 'S', '207': '.', '208': 'S', '209': '.', '210': '.', '211': 'R', '212': '.', '213': '.', '214': 'E', '215': '.', '216': 'L', '217': '.', '218': 'R', '219': '.', '220': '.', '221': 'G', '222': '.', '223': 'G', '224': '.'}
-#
+user_letters = 'cat'
 
-# fits = FitsBoard()
-# start = datetime.now()
-# print(fits.fits_board(board, 'cat'))
-# print(f'Duration: {datetime.now() - start}')
+board = {str(key):'.' for key in range(225)}
 
+board['1'] = 'C'
+
+fits = FitsBoard()
+start = datetime.now()
+print(fits.fits_board(board, 'cat'))
+print(f'Duration: {datetime.now() - start}')
+
+# print(board)
 
 # print(scrabble.find_words(board2, user_letters))
 
