@@ -15,9 +15,15 @@ class Trie:
             self.is_word = is_word
             self.children: Dict  = {}
 
-    def __init__(self) -> None:
-        """Initialise instance of Trie class and set root"""
+    def __init__(self, words_to_add:Dict[str,str]) -> None:
+        """Initialise Trie structure with words_to_add input"""
         self.root = self._Node()
+        self.words_to_add:Dict[str,str] = words_to_add
+        self.populate()
+    
+    def populate(self):
+        for word in self.words_to_add:
+            self.add_word(word.lower())
 
     def add_word(self, word: str) -> None:
         """Adds word string to the Trie tree"""
@@ -72,9 +78,7 @@ class Scrabble():
     def __init__(self, scrabble_words:dict) -> None:
         self._scoreWord = ScoreWord() 
         self.check_fits = FitsBoard()
-        self._trie = Trie()
-        for word in scrabble_words:
-            self._trie.add_word(word.lower())
+        self._trie = Trie(scrabble_words)
 
     def find_words(self, board: dict, user_letters: str) -> dict:
         """Takes dict of letters on board and string of users letters and return dict of possible words + definitions"""
