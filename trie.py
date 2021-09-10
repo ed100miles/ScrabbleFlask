@@ -8,8 +8,8 @@ class Scrabble():
     """Facade providing public interface for implementation of scrabble game"""
 
     def __init__(self, valid_scrabble_words: dict) -> None:
-        self._scoreWord = ScoreWord()
-        self.check_fits = FitsBoard()
+        self._scoreWord = Scorer()
+        self.check_fits = FitBoard()
         self._trie = Trie(valid_scrabble_words)
         self._word_finder = WordFinder(self._trie)
 
@@ -40,6 +40,7 @@ class Scrabble():
         possible_words_with_scores_and_defs = self._scoreWord._score_word_dict(
             possible_words)
         return possible_words_with_scores_and_defs
+
 
 class Trie:
     """Create and populate Trie data structure."""
@@ -116,7 +117,7 @@ class WordFinder:
                 self._find_words(user_letters_less_child, node.children[child])
 
 
-class ScoreWord:
+class Scorer:
     """Component class providing methods to add scores to words"""
 
     def _score_word(self, word: str):
@@ -129,7 +130,7 @@ class ScoreWord:
             _score += _letter_scores[letter]
         return _score
 
-    def _score_word_dict(self, word_itter: Dict[str,str]) -> Dict[Any, List[Tuple[str, str]]]:
+    def _score_word_dict(self, word_itter: Dict[str, str]) -> Dict[Any, List[Tuple[str, str]]]:
         """Returns dict with score as key and list of tuples (word, definition) as vaule. Takes dict of words:definitions as input."""
         words_defs_scores_dict = {}
         for word in word_itter:
@@ -141,8 +142,24 @@ class ScoreWord:
         return words_defs_scores_dict
 
 
-class FitsBoard:
+class FitBoard:
     """Component class providing methods that confirm if a word fits on a given board"""
+
+    def fits_board(self, board: dict, word: str) -> bool:
+        """Returns True if word fits either horizontally or vertically on a board and doesn't clash with other letters, else return False. """
+        # Start by creating empty 2d array board representation:
+        out_board: List = [[None] * 15 for i in range(15)]
+        # edit board to reflect input:
+        for x in board.items():
+            key, value = x
+            y, z = int(key) // 15, int(key) % 15
+            out_board[y][z] = value
+        fits_horizontal = self._check_horizontal(word, out_board)
+        # rotatate the board 270 degrees to check if word fits vertically:
+        for _ in range(3):
+            out_board = list(zip(*out_board[::-1]))
+        fits_vertical = self._check_horizontal(word, out_board)
+        return fits_horizontal or fits_vertical
 
     def _check_horizontal(self, word: str, out_board: List) -> bool:
         """Iterates through word and board calling fits_left_right method. 
@@ -153,10 +170,11 @@ class FitsBoard:
                     if letter == square.lower():
                         space_left, space_right = self._fits_left_right(
                             word, letter_num, letter, row, square_num, square)
-                        # return true if space to left and right!
                         if space_left and space_right:
                             return True
         return False
+
+    # Private methods:
 
     def _fits_left_right(self, word: str, letter_num: int, letter: str,
                          row: List, square_num: int, square: str) -> tuple:
@@ -177,7 +195,7 @@ class FitsBoard:
         # check sufficient space after letter:
         after_space_available = 0
         for square in row[square_num+1:]:
-            if square == '.':
+            if square == '.' or square == letter:
                 after_space_available += 1
             else:  #  if not consecutive '.'s break
                 break
@@ -186,7 +204,7 @@ class FitsBoard:
         # check sufficient space before letter:
         before_space_available = 0
         for square in reversed(row[:square_num]):
-            if square == '.':
+            if square == '.' or square == letter:
                 before_space_available += 1
             else:
                 break  #  if not consecutive '.'s break
@@ -194,26 +212,8 @@ class FitsBoard:
             enough_space_left = True
         return (enough_space_left, enough_space_right)
 
-    def fits_board(self, board: dict, word: str) -> bool:
-        """Returns True if word fits either horizontally or vertically on a board and doesn't clash with other letters, else return False. """
-        # Start by creating empty 2d array board representation:
-        out_board: List = [[None] * 15 for i in range(15)]
-        # edit board to reflect input:
-        for x in board.items():
-            key, value = x
-            y = int(key) // 15
-            z = int(key) % 15
-            out_board[y][z] = value
-        fits_horizontal = self._check_horizontal(word, out_board)
-        # rotatate the board 270 degrees to check if word fits vertically:
-        for _ in range(3):
-            out_board = list(zip(*out_board[::-1]))
-        fits_vertical = self._check_horizontal(word, out_board)
-        return fits_horizontal or fits_vertical
-
 
 scrabble = Scrabble(valid_scrabble_words=scrabble_words)
-
 
 if __name__ == "__main__":
     print(f'{__file__} running as __main__')
@@ -221,7 +221,7 @@ if __name__ == "__main__":
 # TODO: Write some proper unit tests:
 
     # Quick tests setup:
-    fits = FitsBoard()
+    fits = FitBoard()
     user_letters = 'arbon'
     board = {str(key): '.' for key in range(225)}
     board['2'] = 'C'
