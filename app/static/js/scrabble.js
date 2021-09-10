@@ -162,10 +162,14 @@ let play_down = false
 let possible_words_dict = null
 FOUND_WORDS_HEADER.textContent = 'Enter your letters below to see what words you can make.'
 let controller = new AbortController() // to abort previous fetch if new one called
+ACROSS_BTN.classList.add('clicked')
 
 // Event listners:
 
-document.addEventListener('keyup', boardType)
+document.addEventListener('keyup', (e) => {
+    boardType(e);
+    debounce_letters_changed(e);
+})
 
 USER_LETTERS.addEventListener('keyup', debounce_letters_changed)
 
@@ -183,7 +187,6 @@ BOARD.addEventListener('click', (e) => {
     }
 })
 
-ACROSS_BTN.classList.add('clicked')
 DOWN_BTN.addEventListener('click', (e) => {
     play_down = true;
     play_across = false;
