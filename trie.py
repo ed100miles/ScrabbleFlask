@@ -1,18 +1,19 @@
-from typing import Any, Dict, Union, List, Set
+from typing import Any, Dict, Union, List, Set, Tuple
 from scrabbleWords import scrabble_words
 from datetime import datetime
 from collections import Counter
 
 
 class Scrabble():
-    """Facade class providing public interface for implementation of scrabble game"""
+    """Facade providing public interface for implementation of scrabble game"""
 
     def __init__(self, valid_scrabble_words: dict) -> None:
         self._scoreWord = ScoreWord()
         self.check_fits = FitsBoard()
         self._trie = Trie(valid_scrabble_words)
+        self._word_finder = WordFinder(self._trie)
 
-    def find_words(self, board: Dict[str, str], user_letters: str) -> Dict[str, str]:
+    def find_words(self, board: Dict[str, str], user_letters: str) -> Dict[Any, List[Tuple[str, str]]]:
         """Takes dict of letters on board and a string of users letters and return dict of possible words + definitions"""
         possible_words: Dict[str, str] = {}
         unique_board_letters: Set[str] = set()
@@ -23,7 +24,7 @@ class Scrabble():
         if len(unique_board_letters) > 0:   # if there's any letters on the board
             for letter in unique_board_letters:     # check what words can be made w/ board+user letters
                 user_letters_and_board_letter = user_letters + letter
-                found_words_dict = self._trie.find_words(
+                found_words_dict = self._word_finder.find_words(
                     user_letters_and_board_letter)
                 for word in found_words_dict:
                     # check if word can fit on the board:
@@ -32,7 +33,7 @@ class Scrabble():
                             # add word to dict with definition as key
                             possible_words[word] = found_words_dict[word]
         else:                                                   # if there's no letters on the board
-            possible_words = self._trie.find_words(
+            possible_words = self._word_finder.find_words(
                 user_letters)                                   # just return words user can make
 
         # add scores to words:
@@ -40,9 +41,8 @@ class Scrabble():
             possible_words)
         return possible_words_with_scores_and_defs
 
-
 class Trie:
-    """Create and populate Trie data structure and find words that can be made with given letters."""
+    """Create and populate Trie data structure."""
 
     class _Node:
         """Non-public Node subclass for Trie class"""
@@ -79,6 +79,13 @@ class Trie:
             # move index node to new child
             index_node = index_node.children[letter]
 
+
+class WordFinder:
+    """Collection of methods for finding valid words in a given a Trie instance"""
+
+    def __init__(self, trie_instance) -> None:
+        self._trie = trie_instance
+
     def find_words(self, user_letters: str) -> dict:
         """Returns dict of words in Trie with matching letters in user_letters string.
             Dict comprised of matching words as keys and definitions as values."""
@@ -87,19 +94,15 @@ class Trie:
 
         # convert found words to dict and add definitions for values:
         found_words_and_defs = {}
-
-
         for word in self.found_words:
             word_up = word.upper()
             found_words_and_defs[word] = scrabble_words[word_up]
         return found_words_and_defs
 
-    # --- Private methods:
-
     def _find_words(self, user_letters: Dict[str, int], node=None) -> None:
-        """Appends to self.found_words list all words added to Trie instance that can be made using user_letters"""
+        """Private. Appends to self.found_words list all words added to Trie instance that can be made using user_letters"""
         if node == None:
-            node = self.root
+            node = self._trie.root
         if node.is_word:
             self.found_words.append(node.is_word)
         # Base case:
@@ -126,7 +129,7 @@ class ScoreWord:
             _score += _letter_scores[letter]
         return _score
 
-    def _score_word_dict(self, word_itter: dict):
+    def _score_word_dict(self, word_itter: Dict[str,str]) -> Dict[Any, List[Tuple[str, str]]]:
         """Returns dict with score as key and list of tuples (word, definition) as vaule. Takes dict of words:definitions as input."""
         words_defs_scores_dict = {}
         for word in word_itter:
@@ -213,7 +216,7 @@ scrabble = Scrabble(valid_scrabble_words=scrabble_words)
 
 
 if __name__ == "__main__":
-    print('I\'m your main man')
+    print(f'{__file__} running as __main__')
 
 # TODO: Write some proper unit tests:
 
